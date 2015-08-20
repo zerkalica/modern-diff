@@ -1,0 +1,6 @@
+{
+    "extends": ["airbnb", "airplus"],
+    "rules": {
+        "indent": [2, 2]
+    }
+}

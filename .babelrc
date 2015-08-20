@@ -1,0 +1,11 @@
+{
+    "stage": 0,
+    "optional": [
+        "runtime",
+        "es7.decorators",
+        "utility.inlineEnvironmentVariables"
+    ],
+    "plugins": [
+        "babel-plugin-espower"
+    ]
+}
