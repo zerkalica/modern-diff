@@ -1,7 +1,7 @@
 {
-  "name": "patch-diff",
+  "name": "modern-diff",
   "version": "0.0.1",
-  "description": "Create patches and diffs for objects",
+  "description": "Compare two data structures and create patches with some additional info",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "http://github.com/zerkalica/patch-diff.git"
+    "url": "http://github.com/zerkalica/modern-diff.git"
   },
   "files": [
     "*.map",
