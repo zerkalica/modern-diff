@@ -74,6 +74,6 @@ class Diff {
   }
 }
 
-export default function initDiff({adapter, codec}) {
+export default function createDiff({adapter, codec}) {
   return (new Diff({adapter, codec})).make
 }
