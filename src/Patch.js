@@ -29,7 +29,20 @@ class Patch {
   }
 
   add(path, value) {
-    this.test(path, value)
+    const parent = path.slice(1)
+    if (this._data.hasIn(parent)) {
+      const container = this._data.getIn(parent)
+      if (this._data.isIndexed(container)) {
+        const idx = path[path.length - 1]
+        if (idx >= 0 && idx <= container.size) {
+          debug('add array element')
+          return this._data.updateIn(parent, (coll) => {
+            return coll.splice(idx, 0, value)
+          })
+        }
+      }
+    }
+    this._data.addIn(path, value)
   }
 
   replace(path, value, toValue) {

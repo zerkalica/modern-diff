@@ -20,15 +20,16 @@ class Diff {
         pathIndex++
       },
       neq(val, newVal) {
-        make(val, newVal, path.concat([codec.encodeSegment(pathIndex)]), ops)
+        make(val, newVal, path.concat(codec.encodeSegment(pathIndex)), ops)
         pathIndex++
       },
       add(val) {
-        make(undefined, val, path.concat([codec.encodeSegment(pathIndex)]), ops)
+        const seg = codec.encodeSegment(pathIndex === a.size() ? '-' : pathIndex)
+        make(undefined, val, path.concat(seg), ops)
         pathIndex++
       },
       sub(newVal) {
-        make(newVal, undefined, path.concat([codec.encodeSegment(pathIndex)]), ops)
+        make(newVal, undefined, path.concat(codec.encodeSegment(pathIndex)), ops)
       }
     }
 
@@ -38,12 +39,12 @@ class Diff {
   _mapDiff(a, b, path, ops) {
     const codec = this._codec
     a.forEach((aVal, aKey) => {
-      this.make(aVal, b.get(aKey), path.concat([codec.encodeSegment(aKey)]), ops)
+      this.make(aVal, b.get(aKey), path.concat(codec.encodeSegment(aKey)), ops)
     })
 
     b.forEach((bVal, bKey) => {
       if (!a.has(bKey)) {
-        this.make(undefined, bVal, path.concat([codec.encodeSegment(bKey)]), ops)
+        this.make(undefined, bVal, path.concat(codec.encodeSegment(bKey)), ops)
       }
     })
   }

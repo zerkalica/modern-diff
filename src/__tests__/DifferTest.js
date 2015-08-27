@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 import assert from 'power-assert'
 import Diff from '../Diff'
 import Immutable from 'immutable'
@@ -94,7 +95,7 @@ function declareTests({diff, a, b, getInPath}, name) {
         const result = makeDiff(['arraysSimple', 'add'])
         assert.deepEqual(result, [
           { op: 'add', path: '/3', value: 4 },
-          { op: 'add', path: '/4', value: 5 }
+          { op: 'add', path: '/-', value: 5 }
         ])
       })
     })
@@ -112,7 +113,7 @@ function declareTests({diff, a, b, getInPath}, name) {
 
       it('should element of array of array added', () => {
         const result = makeDiff(['arrayOfArray', 'add'])
-        assert.deepEqual(result, [ { op: 'add', path: '/1/2', value: 'set5' } ])
+        assert.deepEqual(result, [ { op: 'add', path: '/1/-', value: 'set5' } ])
       })
     })
 
