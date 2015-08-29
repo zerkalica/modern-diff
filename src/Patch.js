@@ -46,7 +46,7 @@ class Patcher {
       }
       this._methods[id](path, toValue === undefined ? value : toValue)
     }
-    return this._data.toJS()
+    return this._data.getIn([])
   }
 }
 

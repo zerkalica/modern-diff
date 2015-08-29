@@ -1,7 +1,7 @@
 {
   "name": "modern-diff",
   "version": "0.0.1",
-  "description": "Compare two data structures and create patches with some additional info",
+  "description": "Compare two data structures and create patches with some additional info. Apply patches to objects.",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
@@ -30,6 +30,12 @@
     "type": "git",
     "url": "http://github.com/zerkalica/modern-diff.git"
   },
+  "keywords": [
+    "diff",
+    "patch",
+    "immutable",
+    "revert"
+  ],
   "files": [
     "*.map",
     "*.js",
@@ -41,10 +47,10 @@
   ],
   "dependencies": {
     "babel-runtime": "^5.8.20",
-    "debug": "^2.2.0",
-    "immutable": "^3.7.4"
+    "debug": "^2.2.0"
   },
   "devDependencies": {
+    "immutable": "^3.7.4",
     "babel": "^5.8.21",
     "babel-core": "^5.8.22",
     "babel-eslint": "^4.0.10",

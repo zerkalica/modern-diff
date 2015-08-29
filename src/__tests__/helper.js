@@ -4,6 +4,8 @@ import Immutable from 'immutable'
 import ImmutableAdapter from '../adapters/ImmutableAdapter'
 import NativeAdapter from '../adapters/NativeAdapter'
 import RFC9602Codec from '../codecs/Rfc9602Codec'
+import CompactCodec from '../codecs/CompactCodec'
+
 ImmutableAdapter.Immutable = Immutable
 
 export default {
@@ -14,7 +16,7 @@ export default {
         normalize: RFC9602Codec.normalize
       })
       return function immutablePatch(data, patches) {
-        return patch(Immutable.fromJS(data), patches)
+        return patch(Immutable.fromJS(data), patches).toJS()
       }
     },
     diff() {
