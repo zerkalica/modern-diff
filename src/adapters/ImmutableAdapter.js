@@ -68,10 +68,11 @@ export default class ImmutableAdapter {
   }
 
   is(src, dest) {
+    let d = dest
     if (dest !== null && typeof dest === 'object') {
-      dest = ImmutableAdapter.Immutable.fromJS(dest)
+      d = ImmutableAdapter.Immutable.fromJS(dest)
     }
-    return ImmutableAdapter.Immutable.is(src, dest)
+    return ImmutableAdapter.Immutable.is(src, d)
   }
 
   forEach(cb) {

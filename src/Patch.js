@@ -54,7 +54,9 @@ export default function createPatch({normalize, skipTest, adapter}) {
   return function _patch(data, patches) {
     const patcher = new Patcher({
       skipTest,
+      /* eslint-disable new-cap */
       data: new adapter(data)
+      /* eslint-enable new-cap */
     })
 
     return patcher.patch(normalize(patches))
