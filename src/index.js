@@ -1,2 +1,2 @@
-import Diff from './diff'
+import Diff from './Diff'
 export default Diff
