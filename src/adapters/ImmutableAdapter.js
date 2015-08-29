@@ -3,6 +3,37 @@ export default class ImmutableAdapter {
     this._data = data
   }
 
+  addIn(path, value) {
+    const parentPath = path.slice(0, -1)
+    const index = path[path.length - 1]
+    const v = this.getIn(parentPath)
+    if (ImmutableAdapter.Immutable.Iterable.isIndexed(v)) {
+      this._data = this._data.updateIn(parentPath, coll =>
+        index === '-'
+          ? coll.push(value)
+          : coll.splice(index, 0, value)
+      )
+    } else {
+      this.setIn(path, value)
+    }
+  }
+
+  setIn(path, value) {
+    this._data = this._data.setIn(path, value)
+  }
+
+  hasIn(path) {
+    return this._data.hasIn(path)
+  }
+
+  removeIn(path) {
+    this._data = this._data.removeIn(path)
+  }
+
+  getIn(path) {
+    return this._data.getIn(path)
+  }
+
   isEmpty() {
     return this._data === undefined
   }

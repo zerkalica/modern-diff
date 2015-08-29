@@ -8,6 +8,42 @@ const encodedSeparator = '~1'
 const escapeRx = /~/g
 const encodedEscape = '~0'
 
+
+/**
+ * Unescape and a reference token
+ *
+ * @private
+ * @param {string} token
+ * @returns {string}
+ */
+
+function unescape(token) {
+  return token.replace(/~1/g, '/').replace(/~0/g, '~')
+}
+
+/**
+ * Convert a JSON Pointer into a key path array
+ *
+ * @private
+ * @param {string} pointer
+ * @returns {array}
+ */
+function parsePointer(pointer) {
+  if (pointer === '') {
+    return []
+  }
+  if (pointer.charAt(0) !== '/') {
+    throw new error.PointerError('Invalid JSON pointer: ' + pointer)
+  }
+  return pointer.substring(1).split(/\//).map(unescape)
+}
+
+const opMap = {
+  'add': '+',
+  'remove': '-',
+  'replace': 'r'
+}
+
 class RFC9602Codec {
   /**
   * Encode a JSON Pointer path segment
@@ -36,6 +72,26 @@ class RFC9602Codec {
     const p = rfcGetString(path)
     ops.push({op: 'test', path: p, value: value})
     ops.push({op: 'replace', path: p, value: toValue})
+  }
+
+  normalize(patches) {
+    const result = []
+    for (let i = 0; i < patches.length; i++) {
+      let toValue
+      const {op, path, value} = patches[i]
+      if (op === 'test') {
+        toValue = value
+      } else {
+        result.push([
+          opMap[op],
+          parsePointer(path),
+          value,
+          toValue
+        ])
+        toValue = undefined
+      }
+    }
+    return result
   }
 
   invert(patches) {
