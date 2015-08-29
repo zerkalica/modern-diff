@@ -1,11 +1,13 @@
 import add from './add'
-import addArrayOfObjects from './addArrayOfObjects'
-import addArrayOfArray from './addArrayOfArray'
+import arrayOfObjects from './arrayOfObjects'
+import arrayOfArray from './arrayOfArray'
 import replace from './replace'
+import remove from './remove'
 
 export default {
   add,
-  addArrayOfObjects,
-  addArrayOfArray,
-  replace
+  arrayOfObjects,
+  arrayOfArray,
+  replace,
+  remove
 }

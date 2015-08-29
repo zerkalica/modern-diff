@@ -53,7 +53,11 @@ export default class NativeAdapter {
     const parentPath = path.slice(0, -1)
     const index = path[path.length - 1]
     const v = this.getIn(parentPath)
-    delete v[index]
+    if (Array.isArray(v)) {
+      v.splice(index, 1)
+    } else {
+      delete v[index]
+    }
 
     return this._data
   }
