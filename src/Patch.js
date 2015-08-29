@@ -20,7 +20,7 @@ class Patcher {
       }
       const v = this._data.getIn(path)
       if (!this._data.is(v, value)) {
-        throw new TypeError('Test is not passed in patch ' + path + ', ' + v + '!==' + value)
+        throw new TypeError('Test is not passed in path ' + path.join('.') + ', ' + v + '!==' + value)
       }
     }
   }

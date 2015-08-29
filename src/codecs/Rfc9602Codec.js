@@ -76,19 +76,29 @@ class RFC9602Codec {
 
   normalize(patches) {
     const result = []
+    let fromValue
     for (let i = 0; i < patches.length; i++) {
-      let toValue
       const {op, path, value} = patches[i]
       if (op === 'test') {
-        toValue = value
+        fromValue = value
       } else {
-        result.push([
+        const item = [
           opMap[op],
-          parsePointer(path),
-          value,
-          toValue
-        ])
-        toValue = undefined
+          parsePointer(path)
+        ]
+
+        if (op === 'replace' || op === 'remove') {
+          item.push(fromValue)
+          if (fromValue === undefined) {
+            throw new Error('previous test patch not found: ' + JSON.stringify(patches.slice(i - 1, 2), 0, '  '))
+          }
+        }
+        if (op === 'replace' || op === 'add') {
+          item.push(value)
+        }
+
+        result.push(item)
+        fromValue = undefined
       }
     }
     return result
