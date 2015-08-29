@@ -52,7 +52,7 @@ export default class ImmutableAdapter {
 
   toJS() {
     const data = this._data
-    if (typeof data === 'object' && data.toJS) {
+    if (data !== null && typeof data === 'object' && data.toJS) {
       return data.toJS()
     }
 
@@ -68,7 +68,7 @@ export default class ImmutableAdapter {
   }
 
   is(src, dest) {
-    if (typeof dest === 'object') {
+    if (dest !== null && typeof dest === 'object') {
       dest = ImmutableAdapter.Immutable.fromJS(dest)
     }
     return ImmutableAdapter.Immutable.is(src, dest)
