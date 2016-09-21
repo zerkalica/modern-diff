@@ -5,24 +5,22 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
+  "config": {
+    "builddir": "./dist"
+  },
   "scripts": {
-    "prepublish": "npm run lint && npm run test && npm run build",
-    "pre-commit": "npm run lint",
-    "update": "ncu -ua && npm install",
-    "pull": "git checkout master && git pull origin master",
-    "push": "git push origin master --tags && npm publish",
-    "release-patch": "npm run pull && npm version patch && npm run push",
-    "release-minor": "npm run pull && npm version minor && npm run push",
-    "release-major": "npm run pull && npm version major && npm run push",
-    "clean": "rm -rf adapters utils codecs __tests__ *.js *.map build",
-    "build": "npm run clean && babel src --source-maps --out-dir .",
-    "deploy": "npm run clean && babel src --source-maps --watch",
-    "prod": "npm run build -- --production",
-    "dev": "npm run build -- --watch",
+    "postinstall": "test -d conf && conf/resources/postinstall.sh $npm_package_name || exit 0",
+    "prepush": "exit 0 && npm test",
+    "preversion": "exit 0 && conf/resources/checkgit.sh && npm test",
+    "postversion": "exit 0 && git push && git push --tags",
+    "precommit": "exit 0",
+    "clean": "rm -rf dist coverage",
+    "build.babel": "npm run clean && babel src --source-maps --out-dir $npm_package_config_builddir",
     "lint": "eslint src",
-    "test": "mocha",
-    "test.dev": "npm run test -- --growl --watch",
-    "test.cov": "babel-istanbul cover --report text --report html node_modules/mocha/bin/_mocha"
+    "check": "flow check",
+    "testonly": "mocha",
+    "test": "npm run testonly",
+    "test.dev": "npm run testonly -- --growl --watch"
   },
   "author": "Stefan Zerkalica <zerkalica@gmail.com>",
   "license": "MIT",
@@ -34,15 +32,13 @@
     "*.map",
     "*.js",
     "*.flow",
+    "package.json",
     "README.md",
     "LICENSE",
     "adapters",
     "codecs",
     "utils"
   ],
-  "dependencies": {
-    "debug": "^2.2.0"
-  },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-core": "^6.14.0",
