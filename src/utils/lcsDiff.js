@@ -1,4 +1,15 @@
-function compare(i, j, src, cb) {
+// @flow
+
+import type {Adapter, Processor} from '../interfaces'
+
+interface LCSMatrix {
+  xs: number[];
+  ys: number[];
+  rawDiff: Array<boolean[]>;
+  matrix: Array<number[]>;
+}
+
+function compare<V>(i: number, j: number, src: LCSMatrix, cb: Processor): void {
   const {matrix, rawDiff, xs, ys} = src
   if (i === 0 && j === 0) {
     return
@@ -23,15 +34,15 @@ function compare(i, j, src, cb) {
  * @param xs Indexed Sequence 1
  * @param ys Indexed Sequence 2
  */
-function computeLcsMatrix(xsSrc, ysSrc) {
-  let i
-  let j
-  const n = xsSrc.size()
-  const m = ysSrc.size()
-  const matrix = []
-  const rawDiff = []
-  const xs = []
-  const ys = []
+function computeLcsMatrix(xsSrc: Adapter<*>, ysSrc: Adapter<*>): LCSMatrix {
+  let i: number
+  let j: number
+  const n: number = xsSrc.size()
+  const m: number = ysSrc.size()
+  const matrix: (number[])[] = []
+  const rawDiff: (boolean[])[] = []
+  const xs: number[] = []
+  const ys: number[] = []
 
   for (i = 0; i < n; i++) {
     matrix[i] = [0]
@@ -47,7 +58,7 @@ function computeLcsMatrix(xsSrc, ysSrc) {
 
   for (i = 0; i < n; i++) {
     for (j = 0; j < m; j++) {
-      const isEqual = rawDiff[i][j] = xsSrc.is(xs[i], ys[j])
+      const isEqual: boolean = rawDiff[i][j] = xsSrc.is(xs[i], ys[j])
       if (isEqual) {
         matrix[i + 1][j + 1] = matrix[i][j] + 1
       } else {
@@ -70,6 +81,6 @@ function computeLcsMatrix(xsSrc, ysSrc) {
  * @param ys Indexed Sequence 2
  * @returns Array of DiffResult {op:'=' | '+' | '-', val:any}
  */
-export default function lcsDiff(xs, ys, cb) {
+export default function lcsDiff(xs: Adapter<*>, ys: Adapter<*>, cb: Processor): void {
   compare(xs.size(), ys.size(), computeLcsMatrix(xs, ys), cb)
 }

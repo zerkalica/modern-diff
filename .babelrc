@@ -1,11 +1,14 @@
 {
-    "stage": 0,
-    "optional": [
-        "runtime",
-        "es7.decorators",
-        "utility.inlineEnvironmentVariables"
-    ],
+    "presets": ["es2015-loose", "stage-0"],
     "plugins": [
-        "babel-plugin-espower"
+        ["module-resolver", {
+            "root": [""],
+            "alias": {
+                "modern-diff": "./src"
+            }
+        }],
+        "syntax-flow",
+        "espower",
+        "transform-flow-strip-types"
     ]
 }

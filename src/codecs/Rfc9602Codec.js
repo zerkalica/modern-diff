@@ -1,12 +1,16 @@
-function rfcGetString(path) {
+// @flow
+
+import type {RFC9602Patch} from '../interfaces'
+
+function rfcGetString(path: string): string {
   return typeof path === 'string' ? path : ('/' + path.join('/'))
 }
 
 // http://tools.ietf.org/html/rfc6901#page-2
-const separatorRx = /\//g
-const encodedSeparator = '~1'
-const escapeRx = /~/g
-const encodedEscape = '~0'
+const separatorRx: RegExp = /\//g
+const encodedSeparator: string = '~1'
+const escapeRx: RegExp = /~/g
+const encodedEscape: string = '~0'
 
 class RFC9602Codec {
   /**
@@ -15,57 +19,61 @@ class RFC9602Codec {
   * @param {string} s decoded segment
   * @returns {string} encoded segment
   */
-  encodeSegment(segment) {
+  encodeSegment(segment: string): string {
     const s = '' + segment
 
     return (s.indexOf('~') !== -1 || s.indexOf('/') !== -1)
       ? s.replace(escapeRx, encodedEscape).replace(separatorRx, encodedSeparator)
       : s
   }
-  add(ops, path, value) {
+
+  add<V>(ops: RFC9602Patch[], path: string, value: V): void {
     ops.push({op: 'add', path: rfcGetString(path), value: value})
   }
 
-  remove(ops, path, value) {
+  remove<V>(ops: RFC9602Patch[], path: string, value: V): void {
     const p = rfcGetString(path)
     ops.push({op: 'test', path: p, value: value})
     ops.push({op: 'remove', path: p})
   }
 
-  replace(ops, path, value, toValue) {
-    const p = rfcGetString(path)
+  replace<V, R>(ops: RFC9602Patch[], path: string, value: V, toValue: R): void {
+    const p: string = rfcGetString(path)
     ops.push({op: 'test', path: p, value: value})
     ops.push({op: 'replace', path: p, value: toValue})
   }
 
-  invert(patches) {
-    const ops = []
-    let prevValue
+  invert(patches: RFC9602Patch[]) {
+    const ops: RFC9602Patch[] = []
+    let prevValue: mixed
+    let prevPatch: RFC9602Patch
     for (let i = patches.length - 1; i >= 0; --i) {
-      const {op, path, value} = patches[i]
-      switch (op) {
+      const patch: RFC9602Patch = patches[i]
+      switch (patch.op) {
         /* eslint-disable indent */
         case 'add':
-          this.remove(ops, path, value)
+          this.remove(ops, patch.path, patch.value)
           break
         case 'remove':
           i--
-          prevValue = i >= 0 ? patches[i].value : undefined
-          if (prevValue === undefined) {
-            throw new Error('need test op before remove in ' + path)
+          prevPatch = patches[i]
+          if (prevPatch.op !== 'test') {
+            throw new Error(`need test op before remove in ${patch.path}`)
           }
-          this.add(ops, path, prevValue)
+          prevValue = i >= 0 ? prevPatch.value : undefined
+          this.add(ops, patch.path, prevValue)
           break
         case 'replace':
           i--
-          prevValue = i >= 0 ? patches[i].value : undefined
-          if (prevValue === undefined) {
-            throw new Error('need test op before remove in ' + path)
+          prevPatch = patches[i]
+          if (prevPatch.op !== 'test') {
+            throw new Error(`need test op before remove in ${patch.path}`)
           }
-          this.replace(ops, path, value, prevValue)
+          prevValue = i >= 0 ? prevPatch.value : undefined
+          this.replace(ops, patch.path, patch.value, prevValue)
           break
         default:
-          throw new Error('Unknown operation: ' + op)
+          throw new Error(`Unknown operation: ${patch.op}`)
           /* eslint-enable indent */
       }
     }

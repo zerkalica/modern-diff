@@ -1,24 +1,28 @@
+// @flow
+
+import type {Patch} from '../interfaces'
+
 class CompactCodec {
-  encodeSegment(s) {
+  encodeSegment(s: string): string {
     return s
   }
 
-  add(ops, path, value) {
+  add<V>(ops: Patch[], path: string[], value: V): void {
     ops.push(['+', path, value])
   }
 
-  remove(ops, path, value) {
+  remove<V>(ops: Patch[], path: string[], value: V): void {
     ops.push(['-', path, value])
   }
 
-  replace(ops, path, value, toValue) {
+  replace<V, R>(ops: Patch[], path: string[], value: V, toValue: R): void {
     ops.push(['r', path, value, toValue])
   }
 
-  invert(patches) {
-    const ops = []
+  invert(patches: Patch[]): Patch[] {
+    const ops: Patch[] = []
     for (let i = patches.length - 1; i >= 0; --i) {
-      const [op, path, value, toValue] = patches[i]
+      const [op, path, value, toValue]: Patch = patches[i]
       switch (op) {
         /* eslint-disable indent */
         case '+':

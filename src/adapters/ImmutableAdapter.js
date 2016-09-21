@@ -1,26 +1,55 @@
-export default class ImmutableAdapter {
+export default class ImmutableAdapter<V> {
+  data: V
+  _iterable: {
+    isKeyed: (v: mixed) => boolean;
+    isIndexed: (v: mixed) => boolean;
+  }
+
   constructor(data) {
-    this._data = data
+    this.data = data
+    this._iterable = ImmutableAdapter.Immutable.Iterable
   }
 
   isEmpty() {
-    return this._data === undefined
+    return this.data === undefined
   }
 
   size() {
-    return this._data.size
+    return this.data.size
   }
 
   get(key) {
-    return this._data.get(key)
+    return this.data.get(key)
   }
 
   has(key) {
-    return this._data.has(key)
+    return this.data.has(key)
+  }
+
+  addIn(path, value) {
+    return this.data.setIn(path, value)
+  }
+
+  setIn(path, value) {
+    this.data = this.data.setIn(path, value)
+    return this
+  }
+
+  getIn(path) {
+    return this.data.getIn(path)
+  }
+
+  hasIn(path) {
+    return this.data.hasIn(path)
+  }
+
+  removeIn(path) {
+    this.data = this.data.removeIn(path)
+    return this
   }
 
   toJS() {
-    const data = this._data
+    const data = this.data
     if (typeof data === 'object' && data.toJS) {
       return data.toJS()
     }
@@ -29,11 +58,11 @@ export default class ImmutableAdapter {
   }
 
   isMap() {
-    return ImmutableAdapter.Immutable.Iterable.isKeyed(this._data)
+    return this._iterable.isKeyed(this.data)
   }
 
   isIndexed() {
-    return ImmutableAdapter.Immutable.Iterable.isIndexed(this._data)
+    return this._iterable.isIndexed(this.data)
   }
 
   is(src, dest) {
@@ -41,7 +70,7 @@ export default class ImmutableAdapter {
   }
 
   forEach(cb) {
-    return this._data.forEach(cb)
+    return this.data.forEach(cb)
   }
 }
 

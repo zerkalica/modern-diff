@@ -1,51 +1,55 @@
+// @flow
+
 import {IPatches} from './asserts'
+import type {Patch, Adapter} from './interfaces'
 
-class Patch {
-  constructor({data, isTestThrows}) {
-    this._methods = {
-      '+': ::this.add,
-      '-': ::this.remove,
-      'r': ::this.replace
-    }
+function test<V, D>(adapter: Adapter<V>, isTestThrows: boolean, path: string[], value: D): void {
 
-    this._data = data
-    this._isTestThrows = !!isTestThrows
-    this.patch = ::this.patch
+  if (!adapter.hasIn(path)) {
+    throw new TypeError(`Path not found: ${path.join('.')}`)
   }
-
-  test(path, value) {
-    if (!this._data.hasIn(path)) {
-      throw new TypeError('Path not found: ' + path)
-    }
-    const v = this._data.getIn(path)
-    if (this._isTestThrows && !this._data.is(v, value)) {
-      throw new TypeError('Test is not passed in patch ' + path + ', ' + v + '!==' + value)
-    }
-  }
-
-  remove(path, value) {
-    this.test(path, value)
-    this._data.removeIn(path)
-  }
-
-  add(path, value) {
-    this.test(path, value)
-  }
-
-  replace(path, value, toValue) {
-    this.test(path, value)
-    this._data.setIn(path, toValue)
-  }
-
-  patch(patches) {
-    IPatches(patches)
-    for (let i = 0; i < patches.length; i++) {
-      const [id, path, value, toValue] = patches[i]
-      this._methods(id)(path, value, toValue)
-    }
+  const v = adapter.getIn(path)
+  if (isTestThrows && !adapter.is(v, value)) {
+    throw new TypeError(`Test is not passed in patch ${path.join('.')}, ${v}!==${value}`)
   }
 }
 
-export default function createPatch(options) {
-  return (new Patch(options)).patch
+function patch<R>(adapter: Adapter<R>, isTestThrows: boolean, patches: Patch[]): R {
+  if (!adapter) {
+    throw new Error('Adapter is not set')
+  }
+  IPatches(patches)
+  for (let i = 0; i < patches.length; i++) {
+    const [id, path, value, toValue] = patches[i]
+    switch (id) {
+      case '+':
+        adapter.addIn(path, value)
+        break
+      case '-':
+        test(adapter, isTestThrows, path, value)
+        adapter.removeIn(path)
+        break
+      case 'r':
+        test(adapter, isTestThrows, path, value)
+        adapter.setIn(path, toValue)
+        break
+      default:
+        throw new Error('Unknown patch operation: ' + id)
+    }
+  }
+
+  return adapter.data
+}
+
+export interface CreatePathOptions {
+  adapter: Class<Adapter<*>>;
+  isTestThrows: boolean;
+}
+
+export type PatchFn<V, R> = (data: V, patches: Patch[]) => R;
+
+export default function createPatch({adapter, isTestThrows}: CreatePathOptions): PatchFn<*, *> {
+  return function patchFn<V, R>(data: V, patches: Patch[]): R {
+    return patch(new adapter(data), isTestThrows, patches)
+  }
 }
