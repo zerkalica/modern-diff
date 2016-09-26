@@ -1,6 +1,6 @@
 {
   "name": "modern-diff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Compare two data structures and create patches with some additional info",
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
