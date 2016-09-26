@@ -1,49 +1,92 @@
-export default class ImmutableAdapter<V> {
-  data: V
-  _iterable: {
-    isKeyed: (v: mixed) => boolean;
-    isIndexed: (v: mixed) => boolean;
+// @flow
+
+type UpdateCb<V> = (val: V) => V
+type Is = (src: Immutable<*>, dest: Immutable<*>) => boolean
+type FromJS = (js: Object) => Immutable<Object>
+
+interface Immutable<V> {
+    get(key: string): V;
+    has(key: string): boolean;
+    getIn<T>(path: string[]): T;
+    hasIn(path: string[]): boolean;
+    removeIn(path: string[]): Immutable<V>;
+    setIn<T>(path: string[], value: T): void;
+    updateIn(path: string[], cb: UpdateCb<*>): void;
+    forEach(cb: UpdateCb<*>): Immutable<*>;
+    size: number;
+}
+
+interface Iterable {
+  isKeyed: (v: mixed) => boolean;
+  isIndexed: (v: mixed) => boolean;
+}
+
+export default class ImmutableAdapter {
+  data: Immutable<*>
+  _iterable: Iterable
+  _is: Is
+  _fromJS: FromJS
+
+  static Immutable: {
+      is: Is;
+      Iterable: Iterable;
+      fromJS: FromJS;
   }
 
-  constructor(data) {
+  constructor(data: Immutable<*>) {
     this.data = data
-    this._iterable = ImmutableAdapter.Immutable.Iterable
+    this._iterable = this.constructor.Immutable.Iterable
+    this._is = this.constructor.Immutable.is
+    this._fromJS = this.constructor.Immutable.fromJS
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.data === undefined
   }
 
-  size() {
+  size(): number {
     return this.data.size
   }
 
-  get(key) {
+  get(key: string): mixed {
     return this.data.get(key)
   }
 
-  has(key) {
+  has(key: string): boolean {
     return this.data.has(key)
   }
 
-  addIn(path, value) {
-    return this.data.setIn(path, value)
+  addIn<T>(path: string[], value: T): ImmutableAdapter {
+    const index: string = path[path.length - 1]
+    const parentPath: string[] = path.slice(0, -1)
+    const v = this.data.getIn(parentPath)
+    if (this._iterable.isIndexed(v)) {
+      this.data = this.data.updateIn(parentPath, coll =>
+        index === '-'
+          ? coll.push(value)
+          : coll.splice(index, 0, value)
+      )
+    } else {
+      this.setIn(path, value)
+    }
+
+    return this
   }
 
-  setIn(path, value) {
+  setIn<T>(path: string[], value: T) {
     this.data = this.data.setIn(path, value)
     return this
   }
 
-  getIn(path) {
+  getIn<T>(path: string[]): T {
     return this.data.getIn(path)
   }
 
-  hasIn(path) {
+  hasIn(path: string[]): boolean {
     return this.data.hasIn(path)
   }
 
-  removeIn(path) {
+  removeIn(path: string[]): ImmutableAdapter {
     this.data = this.data.removeIn(path)
     return this
   }
@@ -57,21 +100,23 @@ export default class ImmutableAdapter<V> {
     return data
   }
 
-  isMap() {
+  isMap(): boolean {
     return this._iterable.isKeyed(this.data)
   }
 
-  isIndexed() {
+  isIndexed(): boolean {
     return this._iterable.isIndexed(this.data)
   }
 
-  is(src, dest) {
-    return ImmutableAdapter.Immutable.is(src, dest)
+  is(src: Immutable<*>, dest: Immutable<*>): boolean {
+    let d = dest
+    if (dest !== null && typeof dest === 'object') {
+      d = this._fromJS(dest)
+    }
+    return this._is(src, dest)
   }
 
-  forEach(cb) {
+  forEach(cb: UpdateCb<*>): Immutable<*> {
     return this.data.forEach(cb)
   }
 }
-
-ImmutableAdapter.Immutable = null

@@ -19,6 +19,10 @@ class CompactCodec {
     ops.push(['r', path, value, toValue])
   }
 
+  normalize(patches: Patch[]): Patch[] {
+    return patches
+  }
+
   invert(patches: Patch[]): Patch[] {
     const ops: Patch[] = []
     for (let i = patches.length - 1; i >= 0; --i) {

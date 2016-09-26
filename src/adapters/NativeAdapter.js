@@ -1,33 +1,61 @@
-export default class NativeAdapter {
-  constructor(data) {
+// @flow
+import type {ForEachCb} from '../interfaces'
+
+export default class NativeAdapter<V: Object> {
+  data: V
+
+  constructor(data: V) {
     this.data = data
   }
 
-  isEmpty() {
+  isEmpty(): boolean {
     return this.data === undefined
   }
 
-  size() {
+  size(): number {
     return this.data.length
   }
 
-  get(key) {
+  get<R>(key: string): R {
     return this.data[key]
   }
 
-  has(key) {
+  has(key: string): boolean {
     return this.data[key] !== undefined
   }
 
-  addIn(path, value) {
-    this.setIn(path, value)
+  addIn(path: string[], value: any): NativeAdapter<V> {
+    let val: any = this.data
+    if (!path.length) {
+      throw new Error('Need non-empty path')
+    }
+
+    const l: number = path.length - 1
+    const index: string = path[l]
+    for (let i = 0; i < l; i++) {
+      val = val[path[i]]
+    }
+
+    if (Array.isArray(val)) {
+      if (index === '-') {
+        val.push(value)
+      } else {
+        val.splice(index, 0, value)
+      }
+    } else {
+      if (!val || typeof val !== 'object') {
+        throw new Error('Need an object instead of ' + String(val))
+      }
+      val[index] = value
+    }
+
     return this
   }
 
-  setIn(path, value) {
+  setIn<R>(path: string[], value: R): NativeAdapter<V> {
     if (!path.length) {
-      this.data = value
-      return
+      this.data = (value: any)
+      return this
     }
 
     const l = path.length - 1
@@ -41,9 +69,9 @@ export default class NativeAdapter {
     return this
   }
 
-  getIn(path) {
+  getIn<R>(path: string[]): R {
     if (!path.length) {
-      return this.data
+      return (this.data: any)
     }
 
     const l = path.length - 1
@@ -55,7 +83,7 @@ export default class NativeAdapter {
     return ptr[path[l]]
   }
 
-  hasIn(path) {
+  hasIn(path: string[]): boolean {
     if (!path.length) {
       throw new Error('Need non-empty path')
     }
@@ -69,7 +97,7 @@ export default class NativeAdapter {
     return ptr[path[l]] !== undefined
   }
 
-  removeIn(path) {
+  removeIn(path: string[]): NativeAdapter<V> {
     if (!path.length) {
       throw new Error('Need non-empty path')
     }
@@ -85,29 +113,30 @@ export default class NativeAdapter {
     return this
   }
 
-  toJS() {
+  toJS(): V {
     return this.data
   }
 
-  isMap() {
+  isMap(): boolean {
     return typeof this.data === 'object' && !Array.isArray(this.data)
   }
 
-  isIndexed() {
+  isIndexed(): boolean {
     return Array.isArray(this.data)
   }
 
-  is(src, dest) {
+  is<V, R>(src: V, dest: R): boolean {
     return typeof src === 'object'
         ? JSON.stringify(src) === JSON.stringify(dest)
         : src === dest
   }
 
-  forEach(cb) {
+  forEach(cb: ForEachCb<*>): NativeAdapter<V> {
     const keys = Object.keys(this.data)
     for (let i = 0; i < keys.length; i++) {
-      const key = keys[i]
-      cb(this.data[key], key)
+        const key = keys[i]
+        cb(this.data[key], key)
     }
+    return this
   }
 }
