@@ -12,7 +12,7 @@ export default {
     patch() {
       const patch = Patch({
         adapter: ImmutableAdapter,
-        normalize: RFC9602Codec.normalize
+        codec: RFC9602Codec
       })
       return function immutablePatch(data, patches) {
         return patch(Immutable.fromJS(data), patches).toJS()
@@ -32,7 +32,7 @@ export default {
     patch() {
       const patch = Patch({
         adapter: NativeAdapter,
-        normalize: RFC9602Codec.normalize
+        codec: RFC9602Codec
       })
       return function nativePatch(data, patches) {
         const clonedData = Immutable.fromJS(data).toJS()

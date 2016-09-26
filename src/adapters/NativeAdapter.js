@@ -49,7 +49,7 @@ export default class NativeAdapter<V: Object> {
       val[index] = value
     }
 
-    return this
+    return this.data
   }
 
   setIn<R>(path: string[], value: R): NativeAdapter<V> {
@@ -102,13 +102,18 @@ export default class NativeAdapter<V: Object> {
       throw new Error('Need non-empty path')
     }
 
-    const l = path.length - 1
+    const l: number = path.length - 1
+    const index: string = path[l]
     let ptr = this.data
     for (let i = 0; i < l; i++) {
       ptr = ptr[path[i]]
     }
 
-    delete ptr[path[l]]
+    if (Array.isArray(ptr)) {
+      ptr.splice(index, 1)
+    } else {
+      delete ptr[index]
+    }
 
     return this
   }

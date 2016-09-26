@@ -52,8 +52,6 @@ export interface Adapter<D> {
     is<I, O>(src: I, dest: O): boolean;
 
     forEach<V>(cb: ForEachCb<V>): Adapter<D>;
-
-    normalize(p: Patch[]): Patch[];
 }
 
 export interface Codec {
@@ -66,6 +64,8 @@ export interface Codec {
     replace<V, R>(ops: Patch[], path: string[], value: V, toValue: R): void;
 
     invert(patches: Patch[]): Patch[];
+
+    normalize(p: Patch[]): Patch[];
 }
 
 export interface Processor {

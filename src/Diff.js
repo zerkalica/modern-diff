@@ -26,7 +26,8 @@ class Diff {
         pathIndex++
       },
       add(val) {
-        t.make(undefined, val, path.concat([codec.encodeSegment(pathIndex)]), ops)
+        const seg = codec.encodeSegment(pathIndex === a.size() ? '-' : pathIndex)
+        t.make(undefined, val, path.concat(seg), ops)
         pathIndex++
       },
       sub(newVal) {

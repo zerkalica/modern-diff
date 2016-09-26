@@ -67,7 +67,7 @@ export default class ImmutableAdapter {
           : coll.splice(index, 0, value)
       )
     } else {
-      this.setIn(path, value)
+      this.data = this.data.setIn(path, value)
     }
 
     return this
@@ -113,7 +113,7 @@ export default class ImmutableAdapter {
     if (dest !== null && typeof dest === 'object') {
       d = this._fromJS(dest)
     }
-    return this._is(src, dest)
+    return this._is(src, d)
   }
 
   forEach(cb: UpdateCb<*>): Immutable<*> {

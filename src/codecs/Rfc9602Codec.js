@@ -21,7 +21,7 @@ const encodedEscape: string = '~0'
  * @returns {string}
  */
 
-function unescape(token) {
+function unescape(token: string): string {
   return token.replace(/~1/g, '/').replace(/~0/g, '~')
 }
 

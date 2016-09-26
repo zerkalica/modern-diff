@@ -13,7 +13,7 @@ function testGen({adapters, groups, types}) {
             describe(group, () => {
               Object.keys(groups[group]).forEach(key => {
                 const [a, b, testDiff] = groups[group][key]
-                it(key, () => {
+                it(`${type} ${name} ${group} ${key}`, () => {
                   type === 'diff'
                     ? assert.deepEqual(o.diff()(a, b), testDiff)
                     : assert.deepEqual(o.patch()(a, testDiff), b)
