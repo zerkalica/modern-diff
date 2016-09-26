@@ -12,6 +12,7 @@ Features:
 -	Can patch objects
 -	Extensible via adapters
 -	Tests
+-	Flow types
 
 Limitations: can produce only add, replace, remove, test patches.
 
@@ -21,9 +22,7 @@ Diff immutable with rfc codec
 ```javascript
 // diff-rfc-immutable.js
 import Immutable from 'immutable'
-import Diff from 'modern-diff'
-import Rfc9602Codec from 'modern-diff/codecs/Rfc9602Codec'
-import ImmutableAdapter from 'modern-diff/adapters/ImmutableAdapter'
+import {Diff, Rfc9602Codec, ImmutableAdapter} from 'modern-diff'
 ImmutableAdapter.Immutable = Immutable
 
 const diff = Diff({
@@ -51,9 +50,7 @@ Diff native with compact codec
 
 ```javascript
 import Immutable from 'immutable'
-import Diff from 'modern-diff'
-import CompactCodec from 'modern-diff/codecs/CompactCodec'
-import NativeAdapter from 'modern-diff/adapters/NativeAdapter'
+import {Diff, NativeAdapter, CompactCodec} from 'modern-diff'
 
 const diffCompact = Diff({
     adapter: NativeAdapter,
@@ -74,8 +71,7 @@ Inverting patches
 -----------------
 
 ```js
-import Rfc9602Codec from 'modern-diff/codecs/Rfc9602Codec'
-import CompactCodec from 'modern-diff/codecs/CompactCodec'
+import {Rfc9602Codec, CompactCodec} from 'modern-diff'
 
 CompactCodec.invert([
   ['-', ['a'], 1],
@@ -114,9 +110,7 @@ Patch immutable with rfc codec
 
 ```js
 import Immutable from 'immutable'
-import Patch from 'modern-diff/Patch'
-import Rfc9602Codec from 'modern-diff/codecs/Rfc9602Codec'
-import ImmutableAdapter from 'modern-diff/adapters/ImmutableAdapter'
+import {Patch, Rfc9602Codec, ImmutableAdapter} from 'modern-diff'
 ImmutableAdapter.Immutable = Immutable
 
 const patch = Patch({

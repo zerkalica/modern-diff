@@ -27,14 +27,8 @@ node_modules
 # Users Environment Variables
 .lock-wscript
 
-flow
 build
 dist
 .tags*
 *.map
-/*.js
 /*.sh
-/__tests__
-/utils
-/adapters
-/codecs
